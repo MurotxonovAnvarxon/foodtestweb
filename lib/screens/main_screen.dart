@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:foodtestweb/my_bloc.dart';
 import 'package:foodtestweb/screens/home.dart';
 import 'package:foodtestweb/screens/label.dart';
 import 'package:foodtestweb/screens/profile.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'add.dart';
 import 'notifications.dart';
@@ -15,6 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   late PageController _pageController;
   int _page = 0;
 
+  int count = 0;
   List icons = [
     Icons.home,
     Icons.label,
@@ -25,20 +28,36 @@ class _MainScreenState extends State<MainScreen> {
 
   List pages = [
     Home(),
-    Label(key: Key("label"),),
-    Add(key: Key("add"),),
-    Notifications(key: Key("notification"),),
-    Profile(key: Key("profile"),),
+    Label(
+      key: Key("label"),
+    ),
+    Add(
+      key: Key("add"),
+    ),
+    Notifications(
+      key: Key("notification"),
+    ),
+    Profile(
+      key: Key("profile"),
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        physics: NeverScrollableScrollPhysics(),
-        controller: _pageController,
-        onPageChanged: onPageChanged,
-        children: List.generate(5, (index) =>  pages[index] ),
+      body:  BlocConsumer<MyBloc, MyState>(
+        listener: (context, stateMy) {
+
+
+        },
+        builder: (context, state) {
+          return PageView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: onPageChanged,
+            children: List.generate(5, (index) => pages[index]),
+          );
+        },
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
@@ -58,19 +77,34 @@ class _MainScreenState extends State<MainScreen> {
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        elevation: 10.0,
-        child: Icon(
-          Icons.add,
-        ),
-        onPressed: () => _pageController.jumpToPage(2),
+      floatingActionButton: BlocConsumer<MyBloc, MyState>(
+        listener: (context, myState) {
+        },
+        builder: (context, myState) {
+          return FloatingActionButton(
+            elevation: 10.0,
+            child: Column(
+              children: [
+                Icon(
+                  Icons.add,
+                ),
+                Text(myState.count.toString() ?? "")
+              ],
+            ),
+            onPressed: () {
+              context.read<MyBloc>().add(AddEvent());
+
+              print(myState.count);
+            },
+          );
+        },
       ),
     );
   }
 
- // void navigationTapped(int page) {
- //    _pageController.jumpToPage(page);
- //  }
+  // void navigationTapped(int page) {
+  //    _pageController.jumpToPage(page);
+  //  }
 
   @override
   void initState() {
@@ -91,18 +125,19 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   buildTabIcon(int index) {
-      return Container(
-        margin: EdgeInsets.fromLTRB( index == 3 ? 30 : 0, 0,  index == 1 ? 30 : 0, 0),
-        child: IconButton(
-          icon: Icon(
-            icons[index],
-            size: 24.0,
-          ),
-          color: _page == index
-              ? Theme.of(context).colorScheme.secondary
-              : Theme.of(context).textTheme.bodySmall!.color,
-          onPressed: () => _pageController.jumpToPage(index),
+    return Container(
+      margin:
+          EdgeInsets.fromLTRB(index == 3 ? 30 : 0, 0, index == 1 ? 30 : 0, 0),
+      child: IconButton(
+        icon: Icon(
+          icons[index],
+          size: 24.0,
         ),
-      );
+        color: _page == index
+            ? Theme.of(context).colorScheme.secondary
+            : Theme.of(context).textTheme.bodySmall!.color,
+        onPressed: () => _pageController.jumpToPage(index),
+      ),
+    );
   }
 }

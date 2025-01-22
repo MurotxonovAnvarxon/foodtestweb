@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:foodtestweb/my_bloc.dart';
 import 'package:foodtestweb/screens/main_screen.dart';
 import 'package:foodtestweb/util/const.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   runApp(MyApp());
@@ -19,7 +21,10 @@ class _MyAppState extends State<MyApp> {
       title: Constants.appName,
       theme: Constants.lightTheme,
       darkTheme: Constants.darkTheme,
-      home: MainScreen(),
+      home: BlocProvider(
+        create: (context) => MyBloc(),
+        child: MainScreen(),
+      ),
     );
   }
 }
